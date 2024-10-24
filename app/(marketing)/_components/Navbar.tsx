@@ -4,9 +4,15 @@ import { useScrollTop } from "@/hooks/useScrollTop";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 import { ModeToggle } from "@/components/ModeToggle";
+import { useConvexAuth } from "convex/react";
+import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "./Spinner";
+import Link from "next/link";
 
 export const Navbar = () => {
   const isScrolled = useScrollTop();
+  const { isAuthenticated, isLoading } = useConvexAuth();
   return (
     <div
       className={cn(
@@ -16,6 +22,27 @@ export const Navbar = () => {
     >
       <Logo />
       <div className="md:ml-auto md:justify-end justify-between w-full flex items-center ga-x-2">
+        {isLoading && <Spinner />}
+        {!isAuthenticated && !isLoading && (
+          <>
+            <SignInButton mode="modal">
+              <Button variant={"ghost"} size={"sm"}>
+                Log in
+              </Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button size={"sm"}>Join for free</Button>
+            </SignUpButton>
+          </>
+        )}
+        {isAuthenticated && !isLoading && (
+          <>
+            <Button variant={"ghost"} size={"sm"} asChild>
+              <Link href={"/documents"}>Enter Jotion</Link>
+            </Button>
+            <UserButton />
+          </>
+        )}
         <ModeToggle />
       </div>
     </div>
